@@ -1,9 +1,7 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+## Environment variables
+### Creating the databases
+We will have two databases in this project- one for development data, and another scaled down data for testing.
 
-
-
---- 
-
-This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
+Create two .env files - .env.test and .env.development. In each of the files, add PGDATABASE=_database-name_. Replace _database-name_ with the correct database name depending on the environment (i.e development or test). The database names can be found in ./db/setup.sql.
