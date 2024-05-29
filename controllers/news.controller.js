@@ -1,4 +1,4 @@
-const { selectTopics, selectArticleById } = require("../models/news.model");
+const { selectTopics, selectArticleById, selectArticles } = require("../models/news.model");
 const endpointData =  require(`${__dirname}/../endpoints.json`)
 
 exports.getTopics = (req, res, next) => {
@@ -15,15 +15,22 @@ exports.getEndpoints = (req, res, next) => {
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   selectArticleById(article_id)
-    .then((articles) => {
-      if (!articles.length) {
-        return res.status(404).send({ msg: 'Article does not exist' });
+    .then((article) => {
+      if (!article.length) {
+        res.status(404).send({ msg: 'Article does not exist' });
       }
-      res.status(200).send({ articles });
+      res.status(200).send({ article });
     })
     .catch((err) => {
       if(err.code === "22P02") {
         res.status(400).send({ msg: 'Bad request' });
       }
+    })
+};
+
+exports.getArticles = (req, res, next) => {
+  selectArticles()
+    .then((articles) => {
+      res.status(200).send({ articles });
     })
 };

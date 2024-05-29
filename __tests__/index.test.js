@@ -4,9 +4,10 @@ const db = require('../db/connection');
 const seed = require('../db/seeds/seed');
 const data = require('../db/data/test-data/');
 const endpointDataFromJson =  require(`${__dirname}/../endpoints.json`)
+const { expect } = require('@jest/globals');
+require('jest-sorted');
 
-beforeEach(() => seed(data)
-);
+beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe('/api/topics', () => {
@@ -54,17 +55,16 @@ describe('/api/articles/:article_id', () => {
       .get('/api/articles/1')
       .expect(200)
       .then((response) => {
-          expect(response.body.articles.length).toBe(1);
-        response.body.articles.forEach((article) => {
-          expect(typeof article.article_id).toBe('number');
-          expect(typeof article.title).toBe('string');
-          expect(typeof article.topic).toBe('string');
-          expect(typeof article.author).toBe('string');
-          expect(typeof article.body).toBe('string');
-          expect(typeof article.created_at).toBe('string');
-          expect(typeof article.votes).toBe('number');
-          expect(typeof article.article_img_url).toBe('string'); 
-        });
+          const article = response.body.article
+          expect(article.length).toBe(1);
+          expect(typeof article[0].article_id).toBe('number');
+          expect(typeof article[0].title).toBe('string');
+          expect(typeof article[0].topic).toBe('string');
+          expect(typeof article[0].author).toBe('string');
+          expect(typeof article[0].body).toBe('string');
+          expect(typeof article[0].created_at).toBe('string');
+          expect(typeof article[0].votes).toBe('number');
+          expect(typeof article[0].article_img_url).toBe('string'); 
       });
   });
   test('GET:404 sends an appropriate status and error message when given a valid but non-existent article id', () => {
@@ -81,6 +81,29 @@ describe('/api/articles/:article_id', () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad request');
+      });
+  });
+})
+
+describe('/api/articles', () => {
+  test('GET:200 Responds with an articles array of article objects', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then((response) => {
+          expect(response.body.articles.length).toBe(13);
+          expect(response.body.articles).toBeSortedBy('created_at', {descending: true });
+        response.body.articles.forEach((article) => {
+          expect(typeof article.article_id).toBe('number');
+          expect(typeof article.title).toBe('string');
+          expect(typeof article.topic).toBe('string');
+          expect(typeof article.author).toBe('string');
+          expect(typeof article.created_at).toBe('string');
+          expect(typeof article.votes).toBe('number');
+          expect(typeof article.article_img_url).toBe('string'); 
+          expect(typeof parseInt(article.comment_count)).toBe('number');
+          expect(article).not.toHaveProperty('body'); 
+        });
       });
   });
 })
