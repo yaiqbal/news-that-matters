@@ -1,3 +1,4 @@
+const { read } = require("fs");
 const db = require("../db/connection");
 
 exports.selectTopics = () => {
