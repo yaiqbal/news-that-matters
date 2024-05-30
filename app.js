@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
-const { getTopics, getEndpoints, getArticleById, getArticles, getCommentsById, postComment, patchArticleController } = require('./controllers/news.controller');
+const { getTopics, getEndpoints, getArticleById, 
+        getArticles, getCommentsById, postComment, 
+        patchArticleController, deleteCommentByIdController, 
+    } = require('./controllers/news.controller');
 
 app.use(express.json());
 
@@ -17,6 +20,8 @@ app.get('/api/articles/:article_id/comments', getCommentsById);
 app.post('/api/articles/:article_id/comments', postComment);
 
 app.patch('/api/articles/:article_id', patchArticleController);
+
+app.delete('/api/comments/:comment_id', deleteCommentByIdController);
 
 app.all('/*', (req,res) => {
     res.status(404).send({ msg: 'Invalid endpoint' });

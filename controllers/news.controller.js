@@ -6,6 +6,7 @@ const {
   selectCommentsById,
   insertComment,
   patchArticleModel,
+  deleteCommentByIdModel
 } = require("../models/news.model");
 const endpointData = require(`${__dirname}/../endpoints.json`);
 
@@ -81,6 +82,21 @@ exports.patchArticleController = (req, res, next) => {
         res.status(404).send({ msg: "Article not found" });
       }
       res.status(200).send({article})
+    })
+    .catch((err) => {
+      next(err)
+    })
+}
+
+exports.deleteCommentByIdController = (req, res, next) => {
+  const {comment_id} = req.params
+
+  deleteCommentByIdModel(comment_id)
+    .then(rowCount => {
+      if(!rowCount) {
+        return res.status(404).send({ msg: 'Comment does not exist' });
+      }
+      res.status(204).send();
     })
     .catch((err) => {
       next(err)
