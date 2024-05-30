@@ -94,13 +94,15 @@ describe('/api/articles', () => {
           expect(response.body.articles.length).toBe(13);
           expect(response.body.articles).toBeSortedBy('created_at', {descending: true });
         response.body.articles.forEach((article) => {
-          expect(typeof article.article_id).toBe('number');
-          expect(typeof article.title).toBe('string');
-          expect(typeof article.topic).toBe('string');
-          expect(typeof article.author).toBe('string');
-          expect(typeof article.created_at).toBe('string');
-          expect(typeof article.votes).toBe('number');
-          expect(typeof article.article_img_url).toBe('string'); 
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url : expect.any(String)
+          })
           expect(typeof parseInt(article.comment_count)).toBe('number');
           expect(article).not.toHaveProperty('body'); 
         });
@@ -109,7 +111,7 @@ describe('/api/articles', () => {
 })
 
 describe('/api/articles/:article_id/comments', () => {
-  test.only('GET:200 Responds with an array of comments for an article_id which exists in the article table', () => {
+  test('GET:200 Responds with an array of comments for an article_id which exists in the article table', () => {
     return request(app)
       .get('/api/articles/3/comments')
       .expect(200)
@@ -117,16 +119,17 @@ describe('/api/articles/:article_id/comments', () => {
         const comments = response.body.comments;
         expect(comments).toBeSortedBy('created_at', {descending: true });
         comments.forEach((comment) => {
-          expect(typeof comment.comment_id).toBe('number');
-          expect(typeof comment.votes).toBe('number');
-          expect(typeof comment.created_at).toBe('string');
-          expect(typeof comment.author).toBe('string');
-          expect(typeof comment.body).toBe('string');
-          expect(typeof comment.article_id).toBe('number');
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          })
         });
       });
   });
-  test.only('GET:200 Responds with an empty array of comments for an article_id which exists in the article table but has no comments in the comments table', () => {
+  test('GET:200 Responds with an empty array of comments for an article_id which exists in the article table but has no comments in the comments table', () => {
     return request(app)
       .get('/api/articles/2/comments')
       .expect(200)
@@ -134,7 +137,7 @@ describe('/api/articles/:article_id/comments', () => {
         expect(response.body.comments.length).toBe(0)
       });
   });
-  test.only('GET:404 sends an appropriate status and error message when given a valid but non-existent article id', () => {
+  test('GET:404 sends an appropriate status and error message when given a valid but non-existent article id', () => {
     return request(app)
       .get('/api/articles/999/comments')
       .expect(404)
@@ -142,9 +145,74 @@ describe('/api/articles/:article_id/comments', () => {
         expect(response.body.msg).toBe('Article not found');
       });
   });
-  test.only('GET:400 sends an appropriate status and error message when given an invalid article id', () => {
+  test('GET:400 sends an appropriate status and error message when given an invalid article id', () => {
     return request(app)
       .get('/api/articles/not-a-article/comments')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  });
+})
+
+describe('/api/articles/:article_id/comments', () => {
+  test('POST:201 inserts a new comment to the comments table and sends the new comment back to the client', () => {
+    const newComment = {
+      username: 'icellusedkars',
+      body: 'quadruped auris'
+    };
+    return request(app)
+      .post('/api/articles/3/comments')
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+        })
+      });
+  })
+  test('POST:400 responds with an appropriate status and error message when provided with a bad comment (no username)', () => {
+    //err.code ---> 23502
+    const newComment = {
+      body: 'quadruped yaris'
+    };
+    return request(app)
+      .post('/api/articles/3/comments')
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  });
+  test('POST:400 responds with an appropriate status and error message when provided with a valid comment but non-existent (valid datatype) article_id', () => {
+    //err.code ---> 23503
+    const newComment = {
+      username: 'icellusedkars',
+      body: 'quadruped auris'
+    };
+    return request(app)
+      .post('/api/articles/999/comments')
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  });
+  test('POST:400 responds with an appropriate status and error message when provided with a valid comment but invalid datatype article_id', () => {
+    //err.code ---> 22P02
+    const newComment = {
+      username: 'icellusedkars',
+      body: 'quadruped auris'
+    };
+    return request(app)
+      .post('/api/articles/not-a-id/comments')
+      .send(newComment)
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad request');
