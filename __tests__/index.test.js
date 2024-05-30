@@ -219,3 +219,63 @@ describe('/api/articles/:article_id/comments', () => {
       });
   });
 })
+
+describe('/api/articles/:article_id', () => {
+  test('PATCH:201 inserts a new comment to the comments table and sends the new comment back to the client', () => {
+    const patchObj = {
+      inc_votes : 100
+    };
+    return request(app)
+      .patch('/api/articles/3')
+      .send(patchObj)
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article.length).toBe(1);
+        const article = response.body.article[0];
+        expect(article).toMatchObject({
+          title : expect.any(String),
+          topic : expect.any(String),
+          author : expect.any(String),
+          body : expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String)
+        })
+      });
+  })
+  test('PATCH:400 responds with an appropriate status and error message when provided with a empty patch object', () => {
+    const patchObj = {
+    };
+    return request(app)
+      .patch('/api/articles/3')
+      .send(patchObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  })
+  test('PATCH:404 responds with an appropriate status and error message when provided with a non existent (valid datatype) article id', () => {
+    const patchObj = {
+      inc_votes : 100
+    };
+    return request(app)
+      .patch('/api/articles/999')
+      .send(patchObj)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Article not found');
+      });
+  })
+  test('PATCH:404 responds with an appropriate status and error message when provided with a non existent (invalid datatype) article id', () => {
+    const patchObj = {
+      inc_votes : 100
+    };
+    return request(app)
+      .patch('/api/articles/notvalidarticle')
+      .send(patchObj)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad request');
+      });
+  })
+})
