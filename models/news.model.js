@@ -1,5 +1,7 @@
 const { read } = require("fs");
 const db = require("../db/connection");
+//const checkExists = require("../utils");
+//const format = require('pg-format');
 
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((result) => {
@@ -29,8 +31,21 @@ exports.selectArticles = () => {
                     GROUP BY C.article_id, A.article_id 
                     ORDER BY A.created_at DESC;`;
 
-  return db.query(queryStr)
-    .then((result) => {
-      return result.rows;
-    });
+  return db.query(queryStr).then((result) => {
+    return result.rows;
+  });
+};
+
+exports.selectCommentsById = (article_id) => {
+  const queryStr = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`;
+
+  return db.query(queryStr, [article_id]).then((result) => {
+    return result.rows;
+  });
+};
+exports.checkArticleExists = (article_id) => {
+  const queryStr = `SELECT 1 FROM articles WHERE article_id = $1;`;
+  return db.query(queryStr, [article_id]).then((result) => {
+    return result.rowCount > 0;
+  });
 };
