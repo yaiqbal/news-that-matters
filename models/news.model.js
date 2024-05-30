@@ -72,3 +72,15 @@ exports.patchArticleModel = (({inc_votes}, article_id) => {
       throw err
     })
 })
+
+exports.deleteCommentByIdModel = (comment_id => {
+  const queryStr = `DELETE FROM comments WHERE comment_id = $1 RETURNING *;`
+  return db
+    .query(queryStr, [comment_id])
+    .then(result => {
+      return result.rowCount
+    })
+    .catch((err) => {
+      throw err
+    })
+})
