@@ -4,7 +4,8 @@ const {
   selectArticles,
   checkArticleExists,
   selectCommentsById,
-  insertComment
+  insertComment,
+  patchArticleModel,
 } = require("../models/news.model");
 const endpointData = require(`${__dirname}/../endpoints.json`);
 
@@ -68,4 +69,20 @@ exports.postComment = (req, res, next) => {
       next(err)
     })
 
+}
+
+exports.patchArticleController = (req, res, next) => {
+  const changeVote = req.body
+  const {article_id} = req.params
+
+  patchArticleModel(changeVote,article_id)
+    .then(article => {
+      if (!article.length) {
+        res.status(404).send({ msg: "Article not found" });
+      }
+      res.status(200).send({article})
+    })
+    .catch((err) => {
+      next(err)
+    })
 }
