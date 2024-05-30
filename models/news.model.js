@@ -1,7 +1,6 @@
 const { read } = require("fs");
 const db = require("../db/connection");
-//const checkExists = require("../utils");
-//const format = require('pg-format');
+const { log } = require("console");
 
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((result) => {
@@ -49,3 +48,17 @@ exports.checkArticleExists = (article_id) => {
     return result.rowCount > 0;
   });
 };
+
+exports.insertComment = (({ username, body }, article_id) => {
+  return db
+  .query(
+    'INSERT INTO comments (author, body, article_id) VALUES ($1, $2, $3) RETURNING *;',
+    [username, body, article_id]
+  )
+  .then((result) => {
+    return result.rows[0];
+  })
+  .catch((err) => {
+    throw err
+  })
+})

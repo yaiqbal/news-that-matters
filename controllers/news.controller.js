@@ -4,6 +4,7 @@ const {
   selectArticles,
   checkArticleExists,
   selectCommentsById,
+  insertComment
 } = require("../models/news.model");
 const endpointData = require(`${__dirname}/../endpoints.json`);
 
@@ -37,7 +38,7 @@ exports.getArticles = (req, res, next) => {
   });
 };
 
-exports.getCommentsById = async (req, res, next) => {
+exports.getCommentsById = (req, res, next) => {
   const { article_id } = req.params;
 
   checkArticleExists(article_id)
@@ -54,3 +55,17 @@ exports.getCommentsById = async (req, res, next) => {
       next(err);
     });
 };
+
+exports.postComment = (req, res, next) => {
+  const newComment = req.body
+  const {article_id} = req.params
+
+  insertComment(newComment, article_id)
+    .then((comment) => {
+      res.status(201).send({comment})
+    })
+    .catch((err) => {
+      next(err)
+    })
+
+}

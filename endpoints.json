@@ -103,7 +103,21 @@
           "votes": 0,
           "created_at": "2020-06-20T07:24:00.000Z"
         }
-    ]
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a comment object for an article_id",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 19,
+        "body": "quadruped auris",
+        "article_id": 3,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2024-05-30T12:50:15.747Z"
+      }
     }
   }
 }
