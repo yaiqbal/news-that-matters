@@ -130,11 +130,22 @@ describe('/api/articles', () => {
             article_img_url : expect.any(String),
             body: expect.any(String)
           })
+          expect(article.topic).toBe(topic)
         });
       });
   });
   test('GET:404 sends an appropriate status and error message when queried for non-existent topic (valid datatype)', () => {
     const topic = "northcoders"
+    return request(app)
+      .get('/api/articles')
+      .query({topic})
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Topic not found');
+      });
+  });
+  test('GET:404 sends an appropriate status and error message when queried for a existing topic but with no corresponding articles', () => {
+    const topic = "paper"
     return request(app)
       .get('/api/articles')
       .query({topic})
