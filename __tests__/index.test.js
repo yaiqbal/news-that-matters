@@ -175,6 +175,9 @@ describe('/api/articles/:article_id/comments', () => {
           votes: expect.any(Number),
           created_at: expect.any(String),
         })
+        expect(comment.article_id).toBe(3)
+        expect(comment.author).toBe('icellusedkars')
+        expect(comment.body).toBe('quadruped auris')
       });
   })
   test('POST:400 responds with an appropriate status and error message when provided with a bad comment (no username)', () => {
@@ -199,9 +202,9 @@ describe('/api/articles/:article_id/comments', () => {
     return request(app)
       .post('/api/articles/999/comments')
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe('Bad request');
+        expect(response.body.msg).toBe('Input parameter not found');
       });
   });
   test('POST:400 responds with an appropriate status and error message when provided with a valid comment but invalid datatype article_id', () => {
@@ -216,6 +219,20 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad request');
+      });
+  });
+  test('POST:400 responds with an appropriate status and error message when provided with an invalid value (foreign key violation) for username property of comment object (article_id exists)', () => {
+    //err.code ---> 23503
+    const newComment = {
+      username: 'nc_user',
+      body: 'quadruped auris'
+    };
+    return request(app)
+      .post('/api/articles/3/comments')
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Input parameter not found');
       });
   });
 })
@@ -301,6 +318,24 @@ describe('/api/comments/:comment_id', () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad request');
+      });
+  });
+})
+
+describe('/api/users', () => {
+  test('GET:200 sends an array of users to the client', () => {
+    return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then((response) => {
+          expect(response.body.users.length).toBe(4);
+        response.body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username : expect.any(String),
+            name : expect.any(String),
+            avatar_url : expect.any(String),
+          })
+        });
       });
   });
 })
