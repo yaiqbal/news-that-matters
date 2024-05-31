@@ -55,16 +55,19 @@ describe('/api/articles/:article_id', () => {
       .get('/api/articles/1')
       .expect(200)
       .then((response) => {
-          const article = response.body.article
-          expect(article.length).toBe(1);
-          expect(typeof article[0].article_id).toBe('number');
-          expect(typeof article[0].title).toBe('string');
-          expect(typeof article[0].topic).toBe('string');
-          expect(typeof article[0].author).toBe('string');
-          expect(typeof article[0].body).toBe('string');
-          expect(typeof article[0].created_at).toBe('string');
-          expect(typeof article[0].votes).toBe('number');
-          expect(typeof article[0].article_img_url).toBe('string'); 
+          const article = response.body.article[0]
+          expect(response.body.article.length).toBe(1);
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url : expect.any(String)
+          })
+          expect(typeof parseInt(article.comment_count)).toBe('number');
       });
   });
   test('GET:404 sends an appropriate status and error message when given a valid but non-existent article id', () => {
