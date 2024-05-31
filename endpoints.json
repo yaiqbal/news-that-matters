@@ -46,7 +46,7 @@
   },
   "GET /api/articles": {
     "description": "serves an an articles array of article objects with all article properties and total count of all the comments with a article_id",
-    "queries": [],
+    "queries": ["topic"],
     "exampleResponse": {
       "articles": [
         {

@@ -19,8 +19,10 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = () => {
-  const queryStr = `SELECT 
+exports.selectArticles = (topic) => {
+
+  if (!topic) {
+    const queryStr = `SELECT 
                     A.author, A.title, A.article_id, A.topic, 
                     A.created_at, A.votes, A.article_img_url, 
                     COUNT(C.article_id) AS comment_count 
@@ -29,10 +31,31 @@ exports.selectArticles = () => {
                     ON A.article_id = C.article_id 
                     GROUP BY C.article_id, A.article_id 
                     ORDER BY A.created_at DESC;`;
-
-  return db.query(queryStr).then((result) => {
-    return result.rows;
-  });
+    return db
+      .query(queryStr)
+      .then(result => {
+                      return result.rows;
+      })
+      .catch(err => {
+        throw err
+      })
+  } else {
+    const queryStr = `SELECT 
+                    author, title, article_id, topic, 
+                    created_at, votes, article_img_url,
+                    body
+                    FROM articles 
+                    WHERE topic = $1;`
+    return db
+      .query(queryStr,[topic])
+      .then(result => {
+          return result.rows;
+      })
+      .catch(err => {
+        throw err
+      })
+  
+  }
 };
 
 exports.selectCommentsById = (article_id) => {
