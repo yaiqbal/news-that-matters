@@ -36,6 +36,7 @@ exports.selectArticles = () => {
 };
 
 exports.selectCommentsById = (article_id) => {
+
   const queryStr = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`;
 
   return db.query(queryStr, [article_id]).then((result) => {
@@ -84,3 +85,10 @@ exports.deleteCommentByIdModel = (comment_id => {
       throw err
     })
 })
+
+exports.selectUsers = () => {
+  const strQuery = `SELECT * FROM users;`
+  return db.query(strQuery).then(result => {
+    return result.rows;
+  });
+};

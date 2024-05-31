@@ -6,7 +6,8 @@ const {
   selectCommentsById,
   insertComment,
   patchArticleModel,
-  deleteCommentByIdModel
+  deleteCommentByIdModel,
+  selectUsers,
 } = require("../models/news.model");
 const endpointData = require(`${__dirname}/../endpoints.json`);
 
@@ -39,6 +40,7 @@ exports.getArticles = (req, res, next) => {
     res.status(200).send({ articles });
   });
 };
+
 
 exports.getCommentsById = (req, res, next) => {
   const { article_id } = req.params;
@@ -102,3 +104,11 @@ exports.deleteCommentByIdController = (req, res, next) => {
       next(err)
     })
 }
+
+exports.getUsers =  ((req, res, next) => {
+
+  selectUsers()
+    .then(users => {
+      res.status(200).send({users})
+    })
+})

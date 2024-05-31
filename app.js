@@ -3,6 +3,7 @@ const app = express();
 const { getTopics, getEndpoints, getArticleById, 
         getArticles, getCommentsById, postComment, 
         patchArticleController, deleteCommentByIdController, 
+        getUsers,
     } = require('./controllers/news.controller');
 
 app.use(express.json());
@@ -23,13 +24,17 @@ app.patch('/api/articles/:article_id', patchArticleController);
 
 app.delete('/api/comments/:comment_id', deleteCommentByIdController);
 
+app.get('/api/users', getUsers);
+
 app.all('/*', (req,res) => {
     res.status(404).send({ msg: 'Invalid endpoint' });
 })
 
 app.use((err, req, res, next) => {
-      if((err.code === "22P02") || (err.code === "23502") || (err.code === "23503")) {
+      if((err.code === "22P02") || (err.code === "23502")) {
          res.status(400).send({ msg: 'Bad request' });
+      } else if (err.code === "23503") {
+        res.status(404).send({ msg: 'Input parameter not found' });
       }
 });
 
