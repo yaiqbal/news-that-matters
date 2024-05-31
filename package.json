@@ -1,7 +1,7 @@
 {
   "name": "be-nc-news",
   "version": "1.0.0",
-  "description": "bc-nc-news",
+  "description": "Backend for NC News",
   "main": "listen.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
@@ -23,10 +23,13 @@
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
   "devDependencies": {
     "jest": "^27.5.1",
-    "jest-extended": "^2.0.0"
+    "jest-extended": "^2.0.0",
+    "jest-sorted": "^1.0.0",
+    "supertest": "^6.3.4"
   },
   "dependencies": {
     "dotenv": "^16.0.0",
+    "express": "^4.17.1",
     "pg": "^8.7.3",
     "pg-format": "^1.0.4"
   },
