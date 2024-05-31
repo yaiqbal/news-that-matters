@@ -35,6 +35,8 @@ app.use((err, req, res, next) => {
          res.status(400).send({ msg: 'Bad request' });
       } else if (err.code === "23503") {
         res.status(404).send({ msg: 'Input parameter not found' });
+      } else {
+        res.status(400).send({ msg: 'Error occurred', err : err.code });
       }
 });
 

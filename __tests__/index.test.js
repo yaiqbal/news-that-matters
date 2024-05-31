@@ -86,7 +86,7 @@ describe('/api/articles/:article_id', () => {
 })
 
 describe('/api/articles', () => {
-  test('GET:200 Responds with an articles array of article objects', () => {
+  test('GET:200 Responds with all articles (articles array) of all article objects when topic is specified', () => {
     return request(app)
       .get('/api/articles')
       .expect(200)
@@ -106,6 +106,38 @@ describe('/api/articles', () => {
           expect(typeof parseInt(article.comment_count)).toBe('number');
           expect(article).not.toHaveProperty('body'); 
         });
+      });
+  });
+  test('GET:200 Responds with specific articles (articles array) of article objects when topic is specified', () => {
+    const topic = "mitch"
+    return request(app)
+      .get('/api/articles')
+      .query({topic})
+      .expect(200)
+      .then((response) => {
+          expect(response.body.articles.length).toBe(12);
+        response.body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url : expect.any(String),
+            body: expect.any(String)
+          })
+        });
+      });
+  });
+  test('GET:404 sends an appropriate status and error message when queried for non-existent topic (valid datatype)', () => {
+    const topic = "northcoders"
+    return request(app)
+      .get('/api/articles')
+      .query({topic})
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Topic not found');
       });
   });
 })

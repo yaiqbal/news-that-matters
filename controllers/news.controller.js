@@ -36,8 +36,18 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles().then((articles) => {
+
+  const {topic} = req.query
+
+  selectArticles(topic)
+  .then((articles) => {
+    if(!articles.length) {
+      res.status(404).send({ msg: "Topic not found" });
+    }
     res.status(200).send({ articles });
+  })
+  .catch((err) => {
+    next(err);
   });
 };
 
