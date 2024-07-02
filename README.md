@@ -1,8 +1,10 @@
-# Northcoders News API
+# News website
+
 Welcome to my prototype News website.
 This project was built in two phases.
 
 Phase 1: Backend Development
+
 • API Development: Built a robust API using JavaScript and PostgreSQL to programmatically access and manipulate application data, emulating a real-world backend service.
 
 • Comprehensive Endpoints: Implemented multiple endpoints including retrieving topics, articles, and users, as well as managing comments and article data with CRUD operations.
